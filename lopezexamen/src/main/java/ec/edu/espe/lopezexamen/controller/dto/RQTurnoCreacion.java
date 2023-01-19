@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RQTurnoPrimero implements Serializable {
+public class RQTurnoCreacion implements Serializable {
 
     private String cedulaCliente;
 

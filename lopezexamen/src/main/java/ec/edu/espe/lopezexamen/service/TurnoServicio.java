@@ -1,7 +1,6 @@
 package ec.edu.espe.lopezexamen.service;
 
 import ec.edu.espe.lopezexamen.exception.RSRuntimeException;
-import ec.edu.espe.lopezexamen.model.Cliente;
 import ec.edu.espe.lopezexamen.model.Ejecutivo;
 import ec.edu.espe.lopezexamen.model.Turno;
 import ec.edu.espe.lopezexamen.repository.EjecutivoRepositorio;
@@ -10,6 +9,7 @@ import ec.edu.espe.lopezexamen.utils.Messages;
 import ec.edu.espe.lopezexamen.utils.RSCode;
 import ec.edu.espe.lopezexamen.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class TurnoServicio {
         this.ejecutivoRepositorio = ejecutivoRepositorio;
     }
 
-    public Turno primeroCrearTurno(Turno turno){
+    public Turno generarTurno(Turno turno){
         List<Turno> turnos = turnoRepositorio.findAll();
 
         turno.setNumero(turnos.size() + 1);
@@ -42,7 +42,7 @@ public class TurnoServicio {
         return turno;
     }
 
-    public Turno segundoCrearTurno(Integer numero, String codigoEjecutivo){
+    public Turno inicioAtencion(Integer numero, String codigoEjecutivo){
 
         Optional<Turno> opTurno = turnoRepositorio.findByNumero(numero);
         Optional<Ejecutivo> opEjecutivo = ejecutivoRepositorio.findByCodigoUsuario(codigoEjecutivo);
@@ -62,6 +62,43 @@ public class TurnoServicio {
         turno.setNombreEjecutivo(ejecutivo.getNombreCompleto());
         turno.setFechaInicioAtencion(Utils.currentDate());
 
+
+        try{
+            this.turnoRepositorio.save(turno);
+        } catch (Exception e){
+            throw new RSRuntimeException(Messages.TURN_NOT_UPDATED, RSCode.INTERNAL_SERVER_ERROR);
+        }
+
+        return turno;
+    }
+
+    public Turno finAtencion(Integer numero){
+        Optional<Turno> opTurno = turnoRepositorio.findByNumero(numero);
+        if(!opTurno.isPresent()){
+            throw new RSRuntimeException("No se encontro numero de turno", RSCode.NOT_FOUND);
+        }
+
+        Turno turno = opTurno.get();
+        turno.setFechaFinAtencion(Utils.currentDate());
+
+        try{
+            this.turnoRepositorio.save(turno);
+        } catch (Exception e){
+            throw new RSRuntimeException(Messages.TURN_NOT_UPDATED, RSCode.INTERNAL_SERVER_ERROR);
+        }
+
+        return turno;
+    }
+
+
+    public Turno calificacion(Integer numero, Integer calificacion){
+        Optional<Turno> opTurno = turnoRepositorio.findByNumero(numero);
+        if(!opTurno.isPresent()){
+            throw new RSRuntimeException("No se encontro numero de turno", RSCode.NOT_FOUND);
+        }
+
+        Turno turno = opTurno.get();
+        turno.setCalificacion(calificacion);
 
         try{
             this.turnoRepositorio.save(turno);

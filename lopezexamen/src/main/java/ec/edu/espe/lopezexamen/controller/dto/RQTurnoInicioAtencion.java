@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RQTurnoSegundo {
+public class RQTurnoInicioAtencion {
     private Integer numeroTurno;
     private String codigoEjecutivo;
 }

@@ -1,7 +1,7 @@
 package ec.edu.espe.lopezexamen.controller;
 
-import ec.edu.espe.lopezexamen.controller.dto.RQTurnoPrimero;
-import ec.edu.espe.lopezexamen.controller.dto.RQTurnoSegundo;
+import ec.edu.espe.lopezexamen.controller.dto.RQTurnoCreacion;
+import ec.edu.espe.lopezexamen.controller.dto.RQTurnoInicioAtencion;
 import ec.edu.espe.lopezexamen.controller.mapper.TurnoMapper;
 import ec.edu.espe.lopezexamen.exception.RSRuntimeException;
 import ec.edu.espe.lopezexamen.model.Turno;
@@ -24,14 +24,14 @@ public class TurnoController {
     }
 
     @PostMapping
-    public ResponseEntity<RSFormat> primeroCrearTurno(@RequestBody RQTurnoPrimero rqTurnoPrimero){
+    public ResponseEntity<RSFormat> generarTurno(@RequestBody RQTurnoCreacion rqTurnoCreacion){
         try {
-            if (!Utils.hasAllAttributes(rqTurnoPrimero)) {
+            if (!Utils.hasAllAttributes(rqTurnoCreacion)) {
                 return ResponseEntity.status(RSCode.BAD_REQUEST.code)
                         .body(RSFormat.builder().message("Failure").data(Messages.MISSING_PARAMS).build());
             }
 
-            Turno turno = turnoServicio.primeroCrearTurno(TurnoMapper.map(rqTurnoPrimero));
+            Turno turno = turnoServicio.generarTurno(TurnoMapper.map(rqTurnoCreacion));
 
             return ResponseEntity.status(RSCode.SUCCESS.code)
                     .body(RSFormat.builder().message("Success").data(turno).build());
@@ -48,14 +48,14 @@ public class TurnoController {
     }
 
     @PutMapping
-    public ResponseEntity<RSFormat> segundoCrearTurno(@RequestBody RQTurnoSegundo rqTurnoSegundo){
+    public ResponseEntity<RSFormat> inicioAtencion(@RequestBody RQTurnoInicioAtencion rqTurnoInicioAtencion){
         try {
-            if (!Utils.hasAllAttributes(rqTurnoSegundo)) {
+            if (!Utils.hasAllAttributes(rqTurnoInicioAtencion)) {
                 return ResponseEntity.status(RSCode.BAD_REQUEST.code)
                         .body(RSFormat.builder().message("Failure").data(Messages.MISSING_PARAMS).build());
             }
 
-            Turno turno = turnoServicio.segundoCrearTurno(rqTurnoSegundo.getNumeroTurno(), rqTurnoSegundo.getCodigoEjecutivo());
+            Turno turno = turnoServicio.inicioAtencion(rqTurnoInicioAtencion.getNumeroTurno(), rqTurnoInicioAtencion.getCodigoEjecutivo());
 
             return ResponseEntity.status(RSCode.SUCCESS.code)
                     .body(RSFormat.builder().message("Success").data(turno).build());
@@ -69,5 +69,53 @@ public class TurnoController {
                     .body(RSFormat.builder().message("Failure").data(e.getMessage()).build());
         }
 
+    }
+
+    @GetMapping(value = "/{numero}")
+    public ResponseEntity<RSFormat> finAtencion(@PathVariable("numero") Integer numero){
+        try {
+            if (Utils.isNullEmpty(numero)) {
+                return ResponseEntity.status(RSCode.BAD_REQUEST.code)
+                        .body(RSFormat.builder().message("Failure").data(Messages.MISSING_PARAMS).build());
+            }
+
+            Turno turno = turnoServicio.finAtencion(numero);
+
+            return ResponseEntity.status(RSCode.SUCCESS.code)
+                    .body(RSFormat.builder().message("Success").data(turno).build());
+
+        }catch(RSRuntimeException e){
+            return ResponseEntity.status(e.getCode())
+                    .body(RSFormat.builder().message("Failure").data(e.getMessage()).build());
+
+        } catch (Exception e){
+            return ResponseEntity.status(500)
+                    .body(RSFormat.builder().message("Failure").data(e.getMessage()).build());
+        }
+    }
+
+    @GetMapping(value = "/{numero}/cliente/{cedula}/calificacion/{calificacion}")
+    public ResponseEntity<RSFormat> calificacion(@PathVariable("numero") Integer numero,
+                                                 @PathVariable("cedula") String cedula,
+                                                 @PathVariable("calificacion") Integer calificacion){
+        try {
+            if (Utils.isNullEmpty(numero)||Utils.isNullEmpty(cedula)||Utils.isNullEmpty(calificacion)) {
+                return ResponseEntity.status(RSCode.BAD_REQUEST.code)
+                        .body(RSFormat.builder().message("Failure").data(Messages.MISSING_PARAMS).build());
+            }
+
+            Turno turno = turnoServicio.calificacion(numero, calificacion);
+
+            return ResponseEntity.status(RSCode.SUCCESS.code)
+                    .body(RSFormat.builder().message("Success").data(turno).build());
+
+        }catch(RSRuntimeException e){
+            return ResponseEntity.status(e.getCode())
+                    .body(RSFormat.builder().message("Failure").data(e.getMessage()).build());
+
+        } catch (Exception e){
+            return ResponseEntity.status(500)
+                    .body(RSFormat.builder().message("Failure").data(e.getMessage()).build());
+        }
     }
 }
