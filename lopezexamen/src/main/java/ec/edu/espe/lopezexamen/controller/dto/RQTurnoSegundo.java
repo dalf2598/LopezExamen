@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RQTurno implements Serializable {
-
-    private String cedulaCliente;
-
-    private String nombreCliente;
-
+public class RQTurnoSegundo {
+    private Integer numeroTurno;
+    private String codigoEjecutivo;
 }
