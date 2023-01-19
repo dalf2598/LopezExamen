@@ -1,6 +1,7 @@
 package ec.edu.espe.lopezexamen.controller.mapper;
 
 import ec.edu.espe.lopezexamen.controller.dto.RQTurnoCreacion;
+import ec.edu.espe.lopezexamen.controller.dto.RSTurno;
 import ec.edu.espe.lopezexamen.model.Turno;
 
 public class TurnoMapper {
@@ -12,5 +13,7 @@ public class TurnoMapper {
                 .nombreCliente(rqTurnoCreacion.getNombreCliente())
                 .build();
     }
+
+
 
 }

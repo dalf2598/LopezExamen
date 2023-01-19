@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RQTurnoInicioAtencion {
+
     private Integer numeroTurno;
+
     private String codigoEjecutivo;
 }
