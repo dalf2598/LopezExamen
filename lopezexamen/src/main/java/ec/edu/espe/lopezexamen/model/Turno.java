@@ -16,7 +16,7 @@ public class Turno {
     @Id
     private String id;
 
-    private String numero;
+    private Integer numero;
 
     private String cedulaCliente;
 

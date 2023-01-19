@@ -1,43 +1,41 @@
 package ec.edu.espe.lopezexamen.controller;
 
-import ch.qos.logback.core.net.server.Client;
+import ec.edu.espe.lopezexamen.controller.dto.RQTurno;
 import ec.edu.espe.lopezexamen.controller.mapper.ClienteMapper;
+import ec.edu.espe.lopezexamen.controller.mapper.TurnoMapper;
 import ec.edu.espe.lopezexamen.exception.RSRuntimeException;
 import ec.edu.espe.lopezexamen.model.Cliente;
-import ec.edu.espe.lopezexamen.service.ClienteServicio;
+import ec.edu.espe.lopezexamen.model.Turno;
+import ec.edu.espe.lopezexamen.service.TurnoServicio;
 import ec.edu.espe.lopezexamen.utils.Messages;
 import ec.edu.espe.lopezexamen.utils.RSCode;
 import ec.edu.espe.lopezexamen.utils.RSFormat;
 import ec.edu.espe.lopezexamen.utils.Utils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/atencion/cliente")
-public class ClienteController {
+@RequestMapping("/api/atencion/turno")
+public class TurnoController {
 
-    private final ClienteServicio clienteServicio;
+    private final TurnoServicio turnoServicio;
 
-    public ClienteController(ClienteServicio clienteServicio){
-        this.clienteServicio = clienteServicio;
+    public TurnoController(TurnoServicio turnoServicio){
+        this.turnoServicio = turnoServicio;
     }
 
-
-    @GetMapping(value = "/{cedula}")
-    public ResponseEntity<RSFormat> datosCliente(@PathVariable("cedula") String cedula){
+    @PostMapping
+    public ResponseEntity<RSFormat> crearTurno(@RequestBody RQTurno rqTurno){
         try {
-            if (Utils.isNullEmpty(cedula)) {
+            if (!Utils.hasAllAttributes(rqTurno)) {
                 return ResponseEntity.status(RSCode.BAD_REQUEST.code)
                         .body(RSFormat.builder().message("Failure").data(Messages.MISSING_PARAMS).build());
             }
 
-            Cliente cliente = clienteServicio.obtenerDatosCliente(cedula);
+            Turno turno = turnoServicio.crearTurno(TurnoMapper.map(rqTurno));
 
             return ResponseEntity.status(RSCode.SUCCESS.code)
-                    .body(RSFormat.builder().message("Success").data(ClienteMapper.map(cliente)).build());
+                    .body(RSFormat.builder().message("Success").data(turno).build());
 
         }catch(RSRuntimeException e){
             return ResponseEntity.status(e.getCode())
