@@ -1,4 +1,4 @@
 package ec.edu.espe.lopezexamen.controller.dto;
 
-public class FillerDto {
+public class RQTurno {
 }
